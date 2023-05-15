@@ -13,19 +13,24 @@ class DNS():
         self.cur.execute(f"INSERT INTO domains VALUES (?, ?)", (ip, dname))
         self.con.commit()
 
+    #domain 정보 삭제하기
     def delete_domain(self, ip:str, dname:str):
         self.cur.execute(f"DELETE FROM domains WHERE ip = ? AND dname = ?", (ip, dname))
         self.con.commit()
 
-    #Domain이름을 받아서 ip주소 찾기
+    #Domain 이름을 받아서 ip주소 찾기
     def search_domain_ip(self, dname:str):
-        self.cur.execute(f"SELECT * FROM domains WHERE dname = ?", (dname,))
-        self.con.commit()
+        self.cur.execute(f"SELECT ip FROM domains WHERE dname = ?", (dname,))
+        ip_list = self.cur.fetchall()
+        for ip in ip_list:
+            print(ip)
         
     #ip주소를 받아서 도메인 이름 찾기
     def search_domain_dname(self, ip:str):
-        self.cur.execute(f"SELECT dname FROM domains WHERE dname = ?", (ip,))
-        self.con.commit()
+        self.cur.execute(f"SELECT dname FROM domains WHERE ip = ?", (ip,))
+        dname_list = self.cur.fetchall()
+        for dname in dname_list:
+            print(dname)
 
 if __name__ == "__main__":
     dns = DNS()
@@ -40,17 +45,12 @@ if __name__ == "__main__":
     for row in dns.cur.execute("""SELECT * FROM domains"""):
         print(row)
     
-    #delete, search 실험
-    #delete 정상 작동, search는 해당 주소 출력이 아직 안됩니다
     try:
         dns.delete_domain('20.200.245.247', 'github.com')
-        dns.search_domain_dname('dankook.ac.kr')
-        dns.search_domain_ip('142.250.204.46')
+        dns.search_domain_ip('dankook.ac.kr')
+        dns.search_domain_dname('142.250.204.46')
     except sqlite3.IntegrityError as e:
         print(f"Error: {e}")
 
     for row in dns.cur.execute("""SELECT * FROM domains"""):
         print(row)
-
-    dns.cur.close()
-    dns.con.close()
