@@ -19,7 +19,7 @@ class DNS():
 
     #Domain이름을 받아서 ip주소 찾기
     def search_domain_ip(self, dname:str):
-        self.cur.execute(f"SELECT * FROM domains WHERE dname = ?", (dname,)):
+        self.cur.execute(f"SELECT * FROM domains WHERE dname = ?", (dname,))
         self.con.commit()
         
     #ip주소를 받아서 도메인 이름 찾기
